@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MotoViP</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FFD700">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+body{background:#0a0a0a;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+.app{max-width:400px;width:100%;background:#111;border-radius:32px;padding:24px;border:2px solid #FFD700;box-shadow:0 20px 40px rgba(255,215,0,.2)}
+.logo{text-align:center;margin-bottom:24px}
+.logo h1{font-size:3.5rem;color:#FFD700;text-shadow:0 0 20px #FFD700}
+.logo p{color:#FFD700;letter-spacing:6px;font-size:1.1rem;border-bottom:2px solid #FFD700;padding-bottom:8px}
+.status{background:#1a1a1a;padding:16px;border-radius:20px;margin-bottom:20px;display:flex;justify-content:space-between;border:1px solid #333}
+.status span:last-child{padding:6px 16px;border-radius:30px;font-weight:bold}
+.aguardando{background:#FFD700;color:#000}
+.andamento{background:#28a745}
+.coletado{background:#17a2b8}
+.completo{background:#6c757d}
+.cancelado{background:#dc3545}
+.tipo{display:flex;gap:12px;margin-bottom:24px}
+.tipo button{flex:1;padding:16px;background:#1a1a1a;border:2px solid #333;border-radius:16px;color:#888;font-weight:bold}
+.tipo button.ativo{background:#FFD700;color:#000;border-color:#FFD700}
+.input-group{margin-bottom:16px}
+label{color:#FFD700;font-weight:600;margin-bottom:6px;display:block}
+input{width:100%;padding:16px;background:#1a1a1a;border:2px solid #333;border-radius:16px;color:#fff}
+input:focus{border-color:#FFD700;outline:none}
+.config{background:#1a1a1a;padding:20px;border-radius:20px;border:1px solid #333;margin:24px 0}
+button{width:100%;padding:18px;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;border-radius:40px;font-weight:bold;font-size:1.2rem;color:#000}
+.resultado{background:#1a1a1a;padding:24px;border-radius:24px;border:2px solid #FFD700;margin-top:24px;display:none}
+.resultado.mostrar{display:block}
+.valor-total{font-size:3.5rem;color:#FFD700;text-align:center;text-shadow:0 0 15px #FFD700}
+.acoes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.acoes button{padding:16px;font-size:1rem;border-radius:16px}
+.acoes button:disabled{opacity:.3}
+</style>
+</head>
+
+<body>
+<div class="app">
+<div class="logo">
+<h1>🏍️ MotoViP</h1>
+<p>ENTREGAS</p>
+</div>
+
+<div class="status">
+<span>Status</span>
+<span id="status" class="aguardando">Aguardando</span>
+</div>
+
+<div class="tipo">
+<button id="passageiro" class="ativo">👤 Passageiro</button>
+<button id="entrega">📦 Entrega</button>
+</div>
+
+<div class="input-group">
+<label>📍 Coleta (km)</label>
+<input type="number" id="coleta" step="0.1">
+</div>
+
+<div class="input-group">
+<label>🎯 Destino (km)</label>
+<input type="number" id="destino" step="0.1">
+</div>
+
+<div class="config">
+<label>💰 R$ por KM</label>
+<input type="number" id="taxa" value="1.50" step="0.1">
+<label>⬇️ Mínimo (R$)</label>
+<input type="number" id="minimo" value="5.00" step="0.5">
+</div>
+
+<button id="calcular">CALCULAR</button>
+
+<div class="resultado" id="resultado">
+<div class="valor-total" id="total">R$ 0,00</div>
+
+<div class="acoes">
+<button id="iniciar">▶️ Iniciar</button>
+<button id="coletar" disabled>📦 Coletar</button>
+<button id="completar" disabled>✅ Completar</button>
+<button id="cancelar">❌ Cancelar</button>
+</div>
+</div>
+</div>
+
+<script>
+let tipo='passageiro'
+passageiro.onclick=()=>{tipo='passageiro';passageiro.classList.add('ativo');entrega.classList.remove('ativo')}
+entrega.onclick=()=>{tipo='entrega';entrega.classList.add('ativo');passageiro.classList.remove('ativo')}
+
+calcular.onclick=()=>{
+let v=(+coleta.value + +destino.value) * +taxa.value
+if(tipo==='passageiro' && v<+minimo.value) v=+minimo.value
+total.textContent='R$ '+v.toFixed(2).replace('.',',')
+resultado.classList.add('mostrar')
+}
+
+iniciar.onclick=()=>{status.textContent='Em andamento';status.className='andamento';coletar.disabled=false}
+coletar.onclick=()=>{status.textContent='Coletado';status.className='coletado';completar.disabled=false}
+completar.onclick=()=>{status.textContent='Completo';status.className='completo'}
+cancelar.onclick=()=>{status.textContent='Cancelado';status.className='cancelado'}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('service-worker.js')}
+</script>
+</body>
+</html>
